@@ -1,153 +1,620 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>ReseñasRBX</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReseñasRBX</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --bg2:#111822;
+      --panel:#121a25cc;
+      --card:#182231;
+      --card2:#1f2c3e;
+      --text:#eef4ff;
+      --muted:#aeb9ca;
+      --line:#25364e;
+      --accent:#2ea8ff;
+      --accent2:#7c5cff;
+      --good:#29d07d;
+      --bad:#ff5c74;
+      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --radius:24px;
+      --radius-sm:18px;
+    }
 
-<style>
-body{
-    background:#111;
-    color:white;
-    font-family:Arial;
-    text-align:center;
-}
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:
+      radial-gradient(1200px 500px at 50% -10%, rgba(46,168,255,.18), transparent 55%),
+      radial-gradient(900px 450px at 20% 12%, rgba(124,92,255,.12), transparent 60%),
+      linear-gradient(180deg, #070b10 0%, #0a0f15 45%, #090c12 100%);
+      color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    }
 
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:20px;
-    max-width:1000px;
-    margin:auto;
-}
+    a{color:inherit}
 
-.game{
-    background:#222;
-    padding:10px;
-    border-radius:10px;
-    cursor:pointer;
-}
+    .wrap{max-width:1200px;margin:0 auto;padding:28px 18px 60px}
 
-.game img{
-    width:100%;
-    border-radius:10px;
-}
+    .topbar{
+      position:sticky;top:12px;z-index:10;
+      backdrop-filter:blur(16px);
+      background:linear-gradient(180deg, rgba(13,19,28,.88), rgba(13,19,28,.72));
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow:var(--shadow);
+      border-radius:28px;
+      padding:14px 16px;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      margin-bottom:26px;
+    }
 
-.score{
-    font-size:30px;
-    margin-top:10px;
-}
+    .brand{display:flex;align-items:center;gap:14px;min-width:0}
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background:linear-gradient(145deg, var(--accent), var(--accent2));
+      display:grid;place-items:center;
+      box-shadow:0 10px 30px rgba(46,168,255,.3);
+      flex:0 0 auto;
+    }
+    .logo span{font-size:1.3rem;font-weight:900}
+    .brand h1{font-size:1.15rem;line-height:1.1;margin:0}
+    .brand p{margin:2px 0 0;color:var(--muted);font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.modal{
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,.8);
-}
+    .stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .pill{
+      padding:10px 14px;border:1px solid rgba(255,255,255,.08);
+      border-radius:999px;background:rgba(255,255,255,.03);color:var(--text);
+      font-size:.9rem;display:flex;align-items:center;gap:8px;
+    }
+    .pill strong{font-weight:800}
 
-.modal-content{
-    background:#1c1c1c;
-    width:80%;
-    max-width:700px;
-    margin:50px auto;
-    padding:20px;
-    border-radius:15px;
-}
+    .hero{padding:22px 6px 10px;text-align:center}
+    .hero h2{font-size:clamp(2.2rem, 6vw, 4.8rem);line-height:.92;margin:8px 0 14px;font-weight:900;letter-spacing:-.04em}
+    .hero h2 span{
+      background:linear-gradient(90deg, #fff, #8ed6ff 45%, #2ea8ff 80%);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .hero p{max-width:840px;margin:0 auto;color:var(--muted);font-size:clamp(1rem, 2.3vw, 1.15rem);line-height:1.65}
 
-.close{
-    float:right;
-    font-size:35px;
-    cursor:pointer;
-}
-</style>
+    .notice-grid{display:grid;gap:14px;margin:28px 0 24px}
+    .notice{
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:22px;padding:16px 18px;box-shadow:var(--shadow);text-align:left
+    }
+    .notice strong{display:block;font-size:1rem;margin-bottom:6px;color:#fff}
+    .notice.info{border-left:4px solid var(--accent)}
+    .notice.warn{border-left:4px solid #ff7a3d;background:linear-gradient(180deg, rgba(255,122,61,.12), rgba(255,255,255,.03))}
+
+    .controls{
+      display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;
+      margin:22px 0 18px
+    }
+    .searchbox{
+      position:relative;display:flex;align-items:center;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+      border-radius:18px;overflow:hidden;box-shadow:var(--shadow)
+    }
+    .searchbox svg{position:absolute;left:16px;opacity:.7}
+    .searchbox input{
+      width:100%;padding:18px 18px 18px 50px;background:transparent;border:0;outline:none;
+      color:var(--text);font-size:1rem
+    }
+    .searchbox input::placeholder{color:#93a1b6}
+    .toggle{
+      display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);box-shadow:var(--shadow)
+    }
+    .switch{position:relative;width:54px;height:30px;flex:0 0 auto}
+    .switch input{opacity:0;width:0;height:0}
+    .slider{
+      position:absolute;cursor:pointer;inset:0;background:#243141;border-radius:999px;transition:.25s;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)
+    }
+    .slider:before{
+      content:"";position:absolute;height:24px;width:24px;left:3px;top:3px;background:#f4f7fb;border-radius:50%;transition:.25s;box-shadow:0 4px 10px rgba(0,0,0,.3)
+    }
+    .switch input:checked + .slider{background:linear-gradient(90deg, var(--accent), var(--accent2))}
+    .switch input:checked + .slider:before{transform:translateX(24px)}
+
+    .filters{
+      display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 18px
+    }
+    .chip{
+      border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);
+      color:var(--text);padding:10px 14px;border-radius:999px;cursor:pointer;transition:.18s;
+      user-select:none
+    }
+    .chip:hover{transform:translateY(-1px);border-color:rgba(46,168,255,.4)}
+    .chip.active{background:linear-gradient(90deg, rgba(46,168,255,.18), rgba(124,92,255,.18));border-color:rgba(46,168,255,.38)}
+
+    .section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:12px 0 14px}
+    .section-head h3{margin:0;font-size:1.25rem}
+    .section-head span{color:var(--muted);font-size:.95rem}
+
+    .grid{
+      display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px
+    }
+    @media (max-width:1100px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media (max-width:780px){
+      .topbar,.controls,.section-head{grid-template-columns:1fr;flex-direction:column;align-items:stretch}
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .stats{justify-content:flex-start}
+    }
+    @media (max-width:520px){.grid{grid-template-columns:1fr}}
+
+    .card{
+      position:relative;overflow:hidden;border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow);cursor:pointer;
+      transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .card:hover{transform:translateY(-4px);border-color:rgba(46,168,255,.35);box-shadow:0 20px 60px rgba(0,0,0,.55)}
+    .thumb{
+      height:158px;position:relative;display:flex;align-items:flex-end;justify-content:space-between;padding:14px;
+      background-size:cover;background-position:center;
+      border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .thumb::after{
+      content:"";position:absolute;inset:0;background:linear-gradient(180deg, transparent 0%, rgba(0,0,0,.2) 50%, rgba(0,0,0,.72) 100%);
+    }
+    .badge, .favmark{
+      position:relative;z-index:1;
+      display:inline-flex;align-items:center;gap:8px;border-radius:999px;
+      padding:8px 10px;background:rgba(0,0,0,.52);border:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(10px)
+    }
+    .badge{font-size:.82rem;color:#fff}
+    .favmark{padding:8px 9px}
+    .favmark.on{background:rgba(41,208,125,.16);border-color:rgba(41,208,125,.28)}
+
+    .content{padding:14px 14px 16px}
+    .content h4{margin:0 0 8px;font-size:1.04rem}
+    .meta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;color:var(--muted);font-size:.88rem}
+    .scoreline{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .score{
+      min-width:52px;text-align:center;padding:10px 12px;border-radius:14px;font-weight:900;font-size:1rem;
+      background:linear-gradient(145deg, rgba(46,168,255,.18), rgba(124,92,255,.16));
+      border:1px solid rgba(255,255,255,.08)
+    }
+    .bar{flex:1;height:10px;background:#101724;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+    .bar > span{display:block;height:100%;background:linear-gradient(90deg, var(--accent), var(--good));border-radius:999px}
+    .excerpt{margin-top:12px;color:#c9d4e2;line-height:1.45;font-size:.93rem;min-height:44px}
+    .tagrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .tag{font-size:.76rem;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:#dbe6f5}
+
+    .empty{
+      display:none;text-align:center;padding:30px 16px;border:1px dashed rgba(255,255,255,.13);
+      border-radius:22px;color:var(--muted);background:rgba(255,255,255,.03)
+    }
+
+    .modal{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:50;
+      background:rgba(0,0,0,.72);backdrop-filter:blur(12px);padding:18px
+    }
+    .modal.open{display:flex}
+    .modal-card{
+      width:min(980px,100%);max-height:min(92vh,980px);overflow:auto;
+      background:linear-gradient(180deg, rgba(14,20,29,.96), rgba(9,13,19,.98));
+      border:1px solid rgba(255,255,255,.08);border-radius:28px;box-shadow:0 28px 80px rgba(0,0,0,.6);
+    }
+    .modal-top{
+      display:grid;grid-template-columns:1.15fr .85fr;gap:18px;padding:18px
+    }
+    @media (max-width:820px){.modal-top{grid-template-columns:1fr}}
+    .heroimg{
+      min-height:420px;border-radius:24px;overflow:hidden;background:#0c1119;border:1px solid rgba(255,255,255,.08);
+      position:relative
+    }
+    .heroimg img{width:100%;height:100%;object-fit:cover;display:block}
+    .heroimg .overlay{
+      position:absolute;inset:0;background:linear-gradient(180deg, transparent 0%, rgba(0,0,0,.25) 60%, rgba(0,0,0,.7) 100%);
+    }
+    .heroimg .hero-title{
+      position:absolute;left:18px;bottom:18px;right:18px;z-index:1;display:flex;justify-content:space-between;align-items:end;gap:14px
+    }
+    .heroimg h2{margin:0;font-size:clamp(1.8rem, 4.3vw, 3rem);line-height:1.02}
+    .bigscore{
+      width:120px;height:120px;flex:0 0 auto;border-radius:18px;display:grid;place-items:center;font-weight:900;
+      font-size:3.1rem;color:#fff;background:linear-gradient(145deg, var(--accent), var(--good));
+      box-shadow:0 12px 28px rgba(41,208,125,.25)
+    }
+    .panel{padding:18px;display:flex;flex-direction:column;gap:14px}
+    .detailgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    @media (max-width:520px){.detailgrid{grid-template-columns:1fr}}
+    .detail{
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px 14px
+    }
+    .detail .k{display:block;color:var(--muted);font-size:.78rem;margin-bottom:4px}
+    .detail .v{font-weight:700}
+    .desc{
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px 16px;line-height:1.7;color:#dbe5f2
+    }
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:820px){.split{grid-template-columns:1fr}}
+    .box{
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px 16px
+    }
+    .box h5{margin:0 0 10px;font-size:1rem}
+    .list{margin:0;padding-left:18px;color:#dbe5f2;line-height:1.7}
+    .list.good li::marker{color:var(--good)}
+    .list.bad li::marker{color:var(--bad)}
+    .closebtn{
+      position:sticky;top:0;margin-left:auto;display:inline-flex;align-items:center;justify-content:center;
+      width:46px;height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.05);color:#fff;cursor:pointer;font-size:1.4rem
+    }
+
+    .footer{
+      margin-top:24px;color:var(--muted);font-size:.9rem;text-align:center;padding:18px 0 0
+    }
+    .footer a{color:#8fd0ff;text-decoration:none}
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo"><span>RBX</span></div>
+        <div>
+          <h1>ReseñasRBX</h1>
+          <p>Opiniones, notas y fichas de juegos de Roblox</p>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="pill">📚 <strong id="countAll">0</strong> juegos</div>
+        <div class="pill">⭐ <strong id="countFav">0</strong> favoritos</div>
+        <div class="pill">🔎 <strong id="countShown">0</strong> visibles</div>
+      </div>
+    </header>
 
-<h1>ReseñasRBX</h1>
+    <section class="hero">
+      <h2><span>Mi EXP</span></h2>
+      <p>
+        Un catálogo personal de juegos con reseñas, puntuaciones e información rápida.
+        Haz clic en cualquier tarjeta para ver la ficha completa.
+      </p>
+    </section>
 
-<div class="grid">
+    <section class="notice-grid">
+      <div class="notice info">
+        <strong>Sobre la puntuación</strong>
+        Las notas representan mi opinión personal sobre diversión, contenido y calidad general.
+      </div>
+      <div class="notice warn">
+        <strong>Sobre las imágenes</strong>
+        Puedes usar capturas tuyas, iconos propios o miniaturas subidas a tu repositorio para que el sitio se vea más original.
+      </div>
+    </section>
 
-<div class="game"
-onclick="abrirJuego(
-'Grow a Garden',
-'10',
-'150 horas',
-'Roblox',
-'Uno de los mejores juegos de granjas.',
-'https://via.placeholder.com/400'
-)">
-<img src="https://via.placeholder.com/200">
-<div class="score">10</div>
-</div>
+    <section class="controls">
+      <div class="searchbox">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Zm6-1.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input id="search" type="search" placeholder="Buscar juegos..." />
+      </div>
+      <label class="toggle">
+        <span class="switch">
+          <input id="favOnly" type="checkbox" />
+          <span class="slider"></span>
+        </span>
+        <span>Solo favoritos</span>
+      </label>
+    </section>
 
-<div class="game"
-onclick="abrirJuego(
-'Dress To Impress',
-'8',
-'20 horas',
-'Roblox',
-'Buen juego de moda.',
-'https://via.placeholder.com/400'
-)">
-<img src="https://via.placeholder.com/200">
-<div class="score">8</div>
-</div>
+    <section class="filters" id="filters"></section>
 
-</div>
+    <div class="section-head">
+      <h3>Juegos</h3>
+      <span id="statusText">Mostrando 0 de 0 juegos</span>
+    </div>
 
-<div id="modal" class="modal">
+    <section class="grid" id="grid"></section>
+    <div class="empty" id="empty">No hay resultados con ese filtro o búsqueda.</div>
 
-<div class="modal-content">
+    <div class="footer">
+      Hecho con HTML, CSS y JavaScript. Publicado con GitHub Pages.
+    </div>
+  </div>
 
-<span class="close" onclick="cerrarModal()">&times;</span>
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="closebtn" id="closeModal" aria-label="Cerrar">×</button>
+      <div class="modal-top">
+        <div class="heroimg" id="heroWrap">
+          <img id="modalImg" alt="" />
+          <div class="overlay"></div>
+          <div class="hero-title">
+            <div>
+              <h2 id="modalTitle"></h2>
+              <div style="color:var(--muted);margin-top:8px" id="modalCategory"></div>
+            </div>
+            <div class="bigscore" id="modalScore">10</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="detailgrid">
+            <div class="detail"><span class="k">Tiempo jugado</span><span class="v" id="modalHours"></span></div>
+            <div class="detail"><span class="k">Plataforma</span><span class="v" id="modalPlatform"></span></div>
+            <div class="detail"><span class="k">Estado</span><span class="v" id="modalState"></span></div>
+            <div class="detail"><span class="k">Favorito</span><span class="v" id="modalFav"></span></div>
+          </div>
+          <div class="desc" id="modalDesc"></div>
+          <div class="split">
+            <div class="box">
+              <h5>Pros</h5>
+              <ul class="list good" id="modalPros"></ul>
+            </div>
+            <div class="box">
+              <h5>Contras</h5>
+              <ul class="list bad" id="modalCons"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<h2 id="titulo"></h2>
+  <script>
+    const games = [
+      {
+        id: "terra",
+        name: "Terraria",
+        category: "Aventura",
+        score: 10,
+        hours: "261h 6m",
+        platform: "PC",
+        favorite: true,
+        status: "Completado",
+        image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+        accent: "#4de39a",
+        description: "Un sandbox de aventura con una cantidad enorme de contenido. Cada run ofrece progreso real, exploración, construcción y combates muy variados.",
+        pros: ["Muchísimo contenido", "Gran rejugabilidad", "Jefes memorables"],
+        cons: ["Puede abrumar al inicio", "La curva de aprendizaje es alta"]
+      },
+      {
+        id: "grow",
+        name: "Grow a Garden",
+        category: "Simulación",
+        score: 9.5,
+        hours: "54h",
+        platform: "Roblox",
+        favorite: true,
+        status: "Jugando",
+        image: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=1200&q=80",
+        accent: "#8fe36f",
+        description: "Un juego tranquilo y adictivo que funciona muy bien por su progreso constante y su sensación de colección.",
+        pros: ["Relajante", "Progreso satisfactorio", "Muy adictivo"],
+        cons: ["Puede repetirse", "Depende de actualizaciones"]
+      },
+      {
+        id: "dress",
+        name: "Dress To Impress",
+        category: "Moda",
+        score: 8.8,
+        hours: "20h",
+        platform: "Roblox",
+        favorite: false,
+        status: "Jugando",
+        image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80",
+        accent: "#ff6bd6",
+        description: "Competitivo, creativo y con bastante personalidad. Funciona muy bien cuando quieres partidas rápidas y variedad visual.",
+        pros: ["Creativo", "Ideal para partidas cortas", "Buen estilo visual"],
+        cons: ["A veces se siente repetitivo", "Depende mucho del gusto personal"]
+      },
+      {
+        id: "tds",
+        name: "Tower Defense Simulator",
+        category: "Estrategia",
+        score: 9.2,
+        hours: "98h",
+        platform: "Roblox",
+        favorite: true,
+        status: "Jugando",
+        image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+        accent: "#5bbcff",
+        description: "Un tower defense sólido con variedad de torres, mapas y retos. Tiene una base muy buena para quienes disfrutan estrategia.",
+        pros: ["Estrategia clara", "Mucha rejugabilidad", "Cooperativo divertido"],
+        cons: ["Puede requerir farmeo", "Algunas partidas son largas"]
+      },
+      {
+        id: "doors",
+        name: "DOORS",
+        category: "Terror",
+        score: 8.7,
+        hours: "31h",
+        platform: "Roblox",
+        favorite: false,
+        status: "Completado",
+        image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=1200&q=80",
+        accent: "#ff8b5f",
+        description: "Terror con buen ritmo, sustos y momentos memorables. Muy entretenido cuando buscas tensión y cooperación.",
+        pros: ["Atmosfera buena", "Muy rejugable", "Ideal con amigos"],
+        cons: ["Puede depender de la suerte", "No es para todos"]
+      },
+      {
+        id: "muck",
+        name: "Muck",
+        category: "Supervivencia",
+        score: 6.8,
+        hours: "12h",
+        platform: "PC",
+        favorite: false,
+        status: "Pausado",
+        image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+        accent: "#ffd166",
+        description: "Divertido al principio, aunque su valor depende bastante de la partida y del grupo con el que juegues.",
+        pros: ["Rápido de entrar", "Puede ser gracioso", "Cooperativo"],
+        cons: ["Contenido limitado", "Se agota rápido"]
+      },
+      {
+        id: "finch",
+        name: "What Remains of Edith Finch",
+        category: "Narrativa",
+        score: 9.0,
+        hours: "3h",
+        platform: "PC",
+        favorite: true,
+        status: "Completado",
+        image: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80",
+        accent: "#a48bff",
+        description: "Una experiencia narrativa corta, memorable y muy bien contada. Destaca por la forma en que te hace avanzar por la historia.",
+        pros: ["Historia muy fuerte", "Creativo", "Muy memorable"],
+        cons: ["Es corto", "No busca rejugabilidad"]
+      },
+      {
+        id: "mania",
+        name: "Rhythm Mania",
+        category: "Música",
+        score: 9.1,
+        hours: "47h",
+        platform: "Roblox",
+        favorite: false,
+        status: "Jugando",
+        image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=80",
+        accent: "#ff7ad9",
+        description: "Buen juego de ritmo con una curva de dominio divertida. Ideal si te gustan los retos y mejorar precisión.",
+        pros: ["Muy rejugable", "Satisfactorio al mejorar", "Buen ritmo"],
+        cons: ["Exige práctica", "Puede ser difícil al inicio"]
+      }
+    ];
 
-<img id="imagen"
-width="250">
+    const grid = document.getElementById('grid');
+    const search = document.getElementById('search');
+    const favOnly = document.getElementById('favOnly');
+    const filtersEl = document.getElementById('filters');
+    const emptyEl = document.getElementById('empty');
+    const statusText = document.getElementById('statusText');
+    const countAll = document.getElementById('countAll');
+    const countFav = document.getElementById('countFav');
+    const countShown = document.getElementById('countShown');
 
-<h1 id="nota"></h1>
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalScore = document.getElementById('modalScore');
+    const modalImg = document.getElementById('modalImg');
+    const modalCategory = document.getElementById('modalCategory');
+    const modalHours = document.getElementById('modalHours');
+    const modalPlatform = document.getElementById('modalPlatform');
+    const modalState = document.getElementById('modalState');
+    const modalFav = document.getElementById('modalFav');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalPros = document.getElementById('modalPros');
+    const modalCons = document.getElementById('modalCons');
+    const heroWrap = document.getElementById('heroWrap');
 
-<p><b>Tiempo:</b> <span id="horas"></span></p>
+    let activeCategory = 'Todos';
 
-<p><b>Plataforma:</b> <span id="plataforma"></span></p>
+    function starEmoji(score){
+      if (score >= 9.5) return '★★★★★';
+      if (score >= 8.5) return '★★★★½';
+      if (score >= 7.5) return '★★★★';
+      if (score >= 6.5) return '★★★½';
+      if (score >= 5.5) return '★★★';
+      return '★★';
+    }
 
-<p id="descripcion"></p>
+    function categories(){
+      return ['Todos', ...new Set(games.map(g => g.category))];
+    }
 
-</div>
+    function renderFilters(){
+      filtersEl.innerHTML = categories().map(cat => `
+        <button class="chip ${cat===activeCategory ? 'active' : ''}" data-cat="${cat}">${cat}</button>
+      `).join('');
 
-</div>
+      filtersEl.querySelectorAll('.chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeCategory = btn.dataset.cat;
+          renderFilters();
+          renderGrid();
+        });
+      });
+    }
 
-<script>
+    function filteredGames(){
+      const q = search.value.trim().toLowerCase();
+      return games.filter(g => {
+        const matchSearch = !q || [g.name, g.category, g.platform, g.description, ...g.pros, ...g.cons].join(' ').toLowerCase().includes(q);
+        const matchFav = !favOnly.checked || g.favorite;
+        const matchCat = activeCategory === 'Todos' || g.category === activeCategory;
+        return matchSearch && matchFav && matchCat;
+      });
+    }
 
-function abrirJuego(
-nombre,
-nota,
-horas,
-plataforma,
-descripcion,
-imagen
-){
+    function cardHTML(g){
+      return `
+        <article class="card" data-id="${g.id}">
+          <div class="thumb" style="background-image:url('${g.image}')">
+            <div class="badge">${starEmoji(g.score)} <strong>${g.score}</strong></div>
+            <div class="favmark ${g.favorite ? 'on' : ''}">${g.favorite ? '⭐' : '☆'}</div>
+          </div>
+          <div class="content">
+            <h4>${g.name}</h4>
+            <div class="meta">
+              <span>${g.category}</span>
+              <span>${g.platform}</span>
+            </div>
+            <div class="scoreline">
+              <div class="bar"><span style="width:${Math.min(100, g.score*10)}%"></span></div>
+              <div class="score">${g.score}</div>
+            </div>
+            <div class="excerpt">${g.description}</div>
+            <div class="tagrow">
+              <span class="tag">${g.hours}</span>
+              <span class="tag">${g.status}</span>
+            </div>
+          </div>
+        </article>
+      `;
+    }
 
-document.getElementById("titulo").innerText=nombre;
-document.getElementById("nota").innerText=nota;
-document.getElementById("horas").innerText=horas;
-document.getElementById("plataforma").innerText=plataforma;
-document.getElementById("descripcion").innerText=descripcion;
-document.getElementById("imagen").src=imagen;
+    function renderGrid(){
+      const list = filteredGames();
+      grid.innerHTML = list.map(cardHTML).join('');
+      countAll.textContent = games.length;
+      countFav.textContent = games.filter(g => g.favorite).length;
+      countShown.textContent = list.length;
+      statusText.textContent = `Mostrando ${list.length} de ${games.length} juegos`;
+      emptyEl.style.display = list.length ? 'none' : 'block';
 
-document.getElementById("modal").style.display="block";
+      grid.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', () => openModal(games.find(g => g.id === card.dataset.id)));
+      });
+    }
 
-}
+    function openModal(game){
+      modalTitle.textContent = game.name;
+      modalScore.textContent = game.score;
+      modalImg.src = game.image;
+      modalImg.alt = game.name;
+      modalCategory.textContent = `${game.category} · ${starEmoji(game.score)}`;
+      modalHours.textContent = game.hours;
+      modalPlatform.textContent = game.platform;
+      modalState.textContent = game.status;
+      modalFav.textContent = game.favorite ? 'Sí' : 'No';
+      modalDesc.textContent = game.description;
+      modalPros.innerHTML = game.pros.map(x => `<li>${x}</li>`).join('');
+      modalCons.innerHTML = game.cons.map(x => `<li>${x}</li>`).join('');
+      heroWrap.style.boxShadow = `0 0 0 1px rgba(255,255,255,.08), 0 24px 60px ${game.accent}25`;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+    }
 
-function cerrarModal(){
-document.getElementById("modal").style.display="none";
-}
+    function close(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
 
-</script>
+    search.addEventListener('input', renderGrid);
+    favOnly.addEventListener('change', renderGrid);
+    closeModal.addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
 
+    renderFilters();
+    renderGrid();
+  </script>
 </body>
 </html>
