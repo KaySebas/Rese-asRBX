@@ -1,38 +1,153 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ReseñasRBX</title>
-    <style>
-        body{
-            background:#1e1e1e;
-            color:white;
-            font-family:Arial,sans-serif;
-            text-align:center;
-        }
+<meta charset="UTF-8">
+<title>ReseñasRBX</title>
 
-        h1{
-            color:#00b7ff;
-        }
+<style>
+body{
+    background:#111;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
 
-        .card{
-            background:#2d2d2d;
-            padding:20px;
-            margin:20px auto;
-            width:300px;
-            border-radius:10px;
-        }
-    </style>
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:20px;
+    max-width:1000px;
+    margin:auto;
+}
+
+.game{
+    background:#222;
+    padding:10px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.game img{
+    width:100%;
+    border-radius:10px;
+}
+
+.score{
+    font-size:30px;
+    margin-top:10px;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.8);
+}
+
+.modal-content{
+    background:#1c1c1c;
+    width:80%;
+    max-width:700px;
+    margin:50px auto;
+    padding:20px;
+    border-radius:15px;
+}
+
+.close{
+    float:right;
+    font-size:35px;
+    cursor:pointer;
+}
+</style>
 </head>
+
 <body>
 
-    <h1>ReseñasRBX</h1>
-    <p>Reseñas de juegos de Roblox</p>
+<h1>ReseñasRBX</h1>
 
-    <div class="card">
-        <h2>Grow a Garden</h2>
-        <p>⭐⭐⭐⭐⭐</p>
-        <p>Excelente juego de granjas.</p>
-    </div>
+<div class="grid">
+
+<div class="game"
+onclick="abrirJuego(
+'Grow a Garden',
+'10',
+'150 horas',
+'Roblox',
+'Uno de los mejores juegos de granjas.',
+'https://via.placeholder.com/400'
+)">
+<img src="https://via.placeholder.com/200">
+<div class="score">10</div>
+</div>
+
+<div class="game"
+onclick="abrirJuego(
+'Dress To Impress',
+'8',
+'20 horas',
+'Roblox',
+'Buen juego de moda.',
+'https://via.placeholder.com/400'
+)">
+<img src="https://via.placeholder.com/200">
+<div class="score">8</div>
+</div>
+
+</div>
+
+<div id="modal" class="modal">
+
+<div class="modal-content">
+
+<span class="close" onclick="cerrarModal()">&times;</span>
+
+<h2 id="titulo"></h2>
+
+<img id="imagen"
+width="250">
+
+<h1 id="nota"></h1>
+
+<p><b>Tiempo:</b> <span id="horas"></span></p>
+
+<p><b>Plataforma:</b> <span id="plataforma"></span></p>
+
+<p id="descripcion"></p>
+
+</div>
+
+</div>
+
+<script>
+
+function abrirJuego(
+nombre,
+nota,
+horas,
+plataforma,
+descripcion,
+imagen
+){
+
+document.getElementById("titulo").innerText=nombre;
+document.getElementById("nota").innerText=nota;
+document.getElementById("horas").innerText=horas;
+document.getElementById("plataforma").innerText=plataforma;
+document.getElementById("descripcion").innerText=descripcion;
+document.getElementById("imagen").src=imagen;
+
+document.getElementById("modal").style.display="block";
+
+}
+
+function cerrarModal(){
+document.getElementById("modal").style.display="none";
+}
+
+</script>
 
 </body>
 </html>
