@@ -1,2 +1,2 @@
-# Rese-asRBX
+# ReseñasRBX
 Reseñas de juegos de Roblox
